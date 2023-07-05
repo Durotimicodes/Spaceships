@@ -1,0 +1,186 @@
+[
+  {
+    "id": 1,
+    "name": "Devastator",
+    "class": "Star Destroyer",
+    "crew": 35000,
+    "image": "https:\\url.to.image",
+    "value": 1999.99,
+    "status": "operational",
+    "armaments": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+          "title": "Ion Cannons",
+          "qty": "60"
+        },
+        {
+          "title": "Tractor Beam",
+          "qty": "10"
+        }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Red Five",
+    "class": "Boeing 3745",
+    "crew": 45000,
+    "image": "https:\\url.to.image",
+    "value": 3999.99,
+    "status": "damaged",
+    "armaments": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+          "title": "Ion Cannons",
+          "qty": "60"
+        },
+        {
+          "title": "Tractor Beam",
+          "qty": "10"
+        }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "High Five",
+    "class": "Boeing 3745",
+    "crew": 45000,
+    "image": "https:\\url.to.image",
+    "value": 3999.99,
+    "status": "damaged",
+    "armaments": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+          "title": "Ion Cannons",
+          "qty": "60"
+        },
+        {
+          "title": "Tractor Beam",
+          "qty": "10"
+        }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Classic Hive",
+    "class": "Star Destroyer",
+    "crew": 45000,
+    "image": "https:\\url.to.image",
+    "value": 3999.99,
+    "status": "damaged",
+    "armaments": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+          "title": "Ion Cannons",
+          "qty": "60"
+        },
+        {
+          "title": "Tractor Beam",
+          "qty": "10"
+        }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Fighter Jet",
+    "class": "Boeing 3745",
+    "crew": 45000,
+    "image": "https:\\url.to.image",
+    "value": 3999.99,
+    "status": "damaged",
+    "armaments": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+          "title": "Ion Cannons",
+          "qty": "60"
+        },
+        {
+          "title": "Tractor Beam",
+          "qty": "10"
+        }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Black Aircraft",
+    "class": "Star Destroyer",
+    "crew": 45000,
+    "image": "https:\\url.to.image",
+    "value": 3999.99,
+    "status": "damaged",
+    "armaments": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+          "title": "Ion Cannons",
+          "qty": "60"
+        },
+        {
+          "title": "Tractor Beam",
+          "qty": "10"
+        }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Limitless",
+    "class": "Star Destroyer",
+    "crew": 45000,
+    "image": "https:\\url.to.image",
+    "value": 3999.99,
+    "status": "damaged",
+    "armaments": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+          "title": "Ion Cannons",
+          "qty": "60"
+        },
+        {
+          "title": "Tractor Beam",
+          "qty": "10"
+        }
+    ]
+  },
+  {
+    "id": 8,
+    "name": "Starling",
+    "class": "Boeing 3745",
+    "crew": 45000,
+    "image": "https:\\url.to.image",
+    "value": 3999.99,
+    "status": "damaged",
+    "armaments": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+          "title": "Ion Cannons",
+          "qty": "60"
+        },
+        {
+          "title": "Tractor Beam",
+          "qty": "10"
+        }
+    ]
+  }
+]
