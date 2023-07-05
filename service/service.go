@@ -14,7 +14,7 @@ type SpaceshipRepository interface {
 	FilterAllByClass(class string) ([]models.Spaceship, error)
 	FilterAllByStatus(status string) ([]models.Spaceship, error)
 	GetSingleSpaceship(id int) (*models.Spaceship, error)
-	CreateSpaceship(name, class, status string, crew int, value float32) map[string]bool
+	CreateSpaceship(name, class, status, title, qty string, crew int, value float32) map[string]bool
 	CreateArmament(title, qty string)
 	DeleteSpaceship(id int) (map[string]bool, error)
 	UpdateSpaceship(id int, ship *models.Spaceship) (map[string]bool, error)
@@ -115,16 +115,6 @@ func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 
 }
 
-func (db *MySQLDb) CreateArmament(title, qty string) {
-	
-	armament := models.Armament{
-		Title: title,
-		Qty:   qty,
-	}
-	
-
-	
-}
 
 func (db *MySQLDb) CreateSpaceship(name, class, status, title, qty string, crew int, value float32) map[string]bool {
 
@@ -223,9 +213,9 @@ func UpdateSpaceship(id int, ship *models.Spaceship) (map[string]bool, error) {
 	return r.UpdateSpaceship(id, ship)
 }
 
-func CreateNewSpaceship(name, class, status string, crew int, value float32) map[string]bool {
+func CreateNewSpaceship(name, class, status, title, qty string, crew int, value float32) map[string]bool {
 	r := &MySQLDb{}
-	return r.CreateSpaceship(name, class, status, crew, value)
+	return r.CreateSpaceship(name, class, status, title, qty, crew, value)
 }
 
 func DeleteSpaceshipByID(id int) (map[string]bool, error) {
