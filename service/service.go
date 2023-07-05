@@ -31,21 +31,6 @@ func NewMySqlDB(db *gorm.DB) *MySQLDb {
 	}
 }
 
-// func readDataFromJSONDatabase(text string) ([]models.Spaceship, error) {
-// 	var response []models.Spaceship
-
-// 	file, err := os.ReadFile(text)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("unable to read file: %w", err)
-// 	}
-
-// 	err = json.Unmarshal(file, &response)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("problems decoding the data into a go struct: %w", err)
-// 	}
-
-// 	return response, nil
-// }
 
 func (db *MySQLDb) GetAll() ([]models.Spaceship, error) {
 
@@ -60,12 +45,12 @@ func (db *MySQLDb) FilterAllByName(name string) ([]models.Spaceship, error) {
 
 	database.DB.Find(&spaceships)
 
-	// for _, spaceship := range spaceships {
-	// 	if spaceship.Name == name {
-	// 		filteredShips = append(filteredShips, spaceship)
+	for _, spaceship := range spaceships {
+		if spaceship.Name == name {
+			filteredShips = append(filteredShips, spaceship)
 
-	// 	}
-	// }
+		}
+	}
 
 	err := database.DB.Preload("Name").Find(&filteredShips).Error
 	if err != nil {
@@ -102,12 +87,12 @@ func (db *MySQLDb) FilterAllByStatus(status string) ([]models.Spaceship, error) 
 
 	database.DB.Find(&spaceships)
 
-	// for _, spaceship := range spaceships {
-	// 	if spaceship.Status == status {
-	// 		filteredShips = append(filteredShips, spaceship)
+	for _, spaceship := range spaceships {
+		if spaceship.Status == status {
+			filteredShips = append(filteredShips, spaceship)
 
-	// 	}
-	// }
+		}
+	}
 
 	err := database.DB.Preload("Status").Find(&filteredShips).Error
 	if err != nil {
@@ -131,31 +116,40 @@ func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 }
 
 func (db *MySQLDb) CreateArmament(title, qty string) {
-	armaments := []models.Armament{}
+	
 	armament := models.Armament{
 		Title: title,
 		Qty:   qty,
 	}
-	armaments = append(armaments, armament)
+	
 
-	database.DB.Create(&armaments)
+	
 }
 
-func (db *MySQLDb) CreateSpaceship(name, class, status string, crew int, value float32) map[string]bool {
+func (db *MySQLDb) CreateSpaceship(name, class, status, title, qty string, crew int, value float32) map[string]bool {
 
-	// db.CreateArmament()
-
-	spaceship := models.Spaceship{
-		Name:   name,
-		Class:  class,
-		Status: status,
-		Crew:   crew,
-		// Armaments: armaments,
-		Value: value,
+	armaments := []models.Armament{}
+	armament := models.Armament{
+		Title: title,
+		Qty: qty,
 	}
+
+	armaments = append(armaments, armament)
+	
+	
+	spaceship := models.Spaceship{
+		Name: name,
+		Class: class,
+		Status: status,
+		Crew: crew,
+		Value: value,
+		Armaments: armaments,
+	}
+	
 
 	spaceship.IsValidSpaceship()
 	database.DB.Create(spaceship)
+	database.DB.Create(armaments)
 
 	return map[string]bool{"success": true}
 

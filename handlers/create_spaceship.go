@@ -18,7 +18,6 @@ func readBody(r *http.Request) []byte {
 }
 
 func ApiResponse(resp map[string]bool, w http.ResponseWriter) {
-	
 	if resp["success"] == true {
 		json.NewEncoder(w).Encode(resp)
 	}
@@ -41,6 +40,7 @@ func (h Handler) CreateSpaceshipHandler(w http.ResponseWriter, r *http.Request) 
 	
 	err := json.Unmarshal(body, &spaceship)
 	helpers.HandlerErr(err)
+	
 	createShip := h.repository.CreateSpaceship(
 		spaceship.Name,
 		spaceship.Class,

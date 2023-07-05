@@ -16,7 +16,6 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/go-chi/render v1.0.2
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.5.1
 	gorm.io/driver/mysql v1.5.1
 )

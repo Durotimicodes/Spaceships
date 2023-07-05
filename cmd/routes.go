@@ -29,7 +29,7 @@ func StartApi() {
 	r.Get("/spaceship/{ID}", handler.GetSpaceShipHandler)
 	r.Post("/spaceship/create", handler.CreateSpaceshipHandler)
 	r.Delete("/spaceship/delete/{ID}", handler.DeleteSpaceshipHandler)
-	r.Put("/spaceship/update/{ID}", handlers.UpdateSpaceshipHandler)
+	// r.Put("/spaceship/update/{ID}", handlers.UpdateSpaceshipHandler)
 
 	log.Printf("Starting the server on port %s", webPort)
 	log.Fatal(http.ListenAndServe(webPort, r))

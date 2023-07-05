@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -14,7 +13,7 @@ import (
 func (h Handler) DeleteSpaceshipHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "ID")
 	spaceshipID, err := strconv.Atoi(id)
-	fmt.Println("URL=>", spaceshipID)
+
 	helpers.HandlerErr(err)
 
 	resp, err := service.DeleteSpaceshipByID(spaceshipID)
