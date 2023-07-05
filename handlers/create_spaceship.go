@@ -34,21 +34,26 @@ func NewHandler(s service.SpaceshipRepository) Handler {
 }
 
 func (h Handler) CreateSpaceshipHandler(w http.ResponseWriter, r *http.Request) {
-
 	body := readBody(r)
 	var spaceship models.Spaceship
-	
+
 	err := json.Unmarshal(body, &spaceship)
 	helpers.HandlerErr(err)
-	
-	createShip := h.repository.CreateSpaceship(
+
+	createShip, err := h.repository.CreateSpaceship(
 		spaceship.Name,
 		spaceship.Class,
 		spaceship.Status,
 		spaceship.Crew,
 		spaceship.Value,
+		spaceship.Armaments,
 	)
+	
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error: ": err.Error()})
+		return
+	}
 
 	ApiResponse(createShip, w)
-
 }

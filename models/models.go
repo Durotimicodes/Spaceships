@@ -32,7 +32,7 @@ type Validation struct {
 }
 
 func (s *Spaceship) IsValidSpaceship() bool {
-	if s.Name == "" || s.Class == "" || s.Armaments == nil || s.Crew == 0 || s.Image == "" || s.Value == 0.0 {
+	if s.Name == "" || s.Class == ""  {
 		return false
 	}
 	return true

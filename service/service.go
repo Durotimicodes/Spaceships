@@ -1,7 +1,9 @@
 package service
 
 import (
+	"errors"
 	"log"
+	"strconv"
 
 	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database"
 	"github.com/durotimicodes/xanda_task_R3_D3/models"
@@ -14,10 +16,9 @@ type SpaceshipRepository interface {
 	FilterAllByClass(class string) ([]models.Spaceship, error)
 	FilterAllByStatus(status string) ([]models.Spaceship, error)
 	GetSingleSpaceship(id int) (*models.Spaceship, error)
-	CreateSpaceship(name, class, status, title, qty string, crew int, value float32) map[string]bool
-	CreateArmament(title, qty string)
+	CreateSpaceship(name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error)
 	DeleteSpaceship(id int) (map[string]bool, error)
-	UpdateSpaceship(id int, ship *models.Spaceship) (map[string]bool, error)
+	UpdateSpaceship(id int, name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error)
 }
 
 // -------- Repository Begin --------
@@ -30,7 +31,6 @@ func NewMySqlDB(db *gorm.DB) *MySQLDb {
 		DB: db,
 	}
 }
-
 
 func (db *MySQLDb) GetAll() ([]models.Spaceship, error) {
 
@@ -115,54 +115,70 @@ func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 
 }
 
+func (db *MySQLDb) CreateSpaceship(name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error) {
 
-func (db *MySQLDb) CreateSpaceship(name, class, status, title, qty string, crew int, value float32) map[string]bool {
-
-	armaments := []models.Armament{}
-	armament := models.Armament{
-		Title: title,
-		Qty: qty,
-	}
-
-	armaments = append(armaments, armament)
-	
-	
 	spaceship := models.Spaceship{
-		Name: name,
-		Class: class,
+		Name:   name,
+		Class:  class,
 		Status: status,
-		Crew: crew,
-		Value: value,
-		Armaments: armaments,
+		Crew:   crew,
+		Value:  value,
 	}
-	
 
-	spaceship.IsValidSpaceship()
-	database.DB.Create(spaceship)
-	database.DB.Create(armaments)
+	isvalid := spaceship.IsValidSpaceship()
+	if !isvalid {
+		return nil, errors.New("spaceship not valid")
+	}
 
-	return map[string]bool{"success": true}
+	resp := database.DB.Create(&spaceship)
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+
+	for i := range armaments {
+		armaments[i].SpaceshipID = spaceship.ID
+	}
+
+	resp = database.DB.Create(&armaments)
+
+	return map[string]bool{"success": true}, resp.Error
 
 }
 
-func (db *MySQLDb) UpdateSpaceship(id int, ship *models.Spaceship) (map[string]bool, error) {
-	spaceship := models.Spaceship{}
+func (db *MySQLDb) UpdateSpaceship(id int, name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error) {
+
+	spaceship := models.Spaceship{
+		Name:   name,
+		Class:  class,
+		Status: status,
+		Crew:   crew,
+		Value:  value,
+	}
+
+	isvalid := spaceship.IsValidSpaceship()
+	if !isvalid {
+		return nil, errors.New("spaceship not valid")
+	}
 
 	err := db.DB.Model(&spaceship).Where("id = ?", id).
-		Update("name", ship.Name).
-		Update("class", ship.Class).
-		Update("armaments", ship.Armaments).
-		Update("crew", ship.Crew).
-		Update("Image", ship.Image).
-		Update("value", ship.Value).
-		Update("status", ship.Status).Error
+		Update("name", name).
+		Update("class", class).
+		Update("armaments", armaments).
+		Update("crew", crew).
+		Update("value", value).
+		Update("status", status).Error
 
 	if err != nil {
-		log.Println("error in updating mysql db")
 		return nil, err
 	}
 
-	return map[string]bool{"success": true}, nil
+	for i := range armaments {
+		armaments[i].SpaceshipID = spaceship.ID
+	}
+
+	resp := db.DB.Model(&armaments).Where("id = ?", strconv.Itoa(id))
+
+	return map[string]bool{"success": true}, resp.Error
 
 }
 
@@ -208,15 +224,15 @@ func GetSpaceship(id int) (*models.Spaceship, error) {
 	return r.GetSingleSpaceship(id)
 }
 
-func UpdateSpaceship(id int, ship *models.Spaceship) (map[string]bool, error) {
+func UpdateSpaceship(id int,name, class, status string, crew int, value float32, armaments []models.Armament ) (map[string]bool, error) {
 	r := &MySQLDb{}
-	return r.UpdateSpaceship(id, ship)
+	return r.UpdateSpaceship(id, name, class, status, crew, value, armaments)
 }
 
-func CreateNewSpaceship(name, class, status, title, qty string, crew int, value float32) map[string]bool {
-	r := &MySQLDb{}
-	return r.CreateSpaceship(name, class, status, title, qty, crew, value)
-}
+// func CreateNewSpaceship(name, class, status string, crew int, value float32) map[string]bool {
+// 	r := &MySQLDb{}
+// 	return r.CreateSpaceship(name, class, status, crew, value)
+// }
 
 func DeleteSpaceshipByID(id int) (map[string]bool, error) {
 	r := &MySQLDb{}
