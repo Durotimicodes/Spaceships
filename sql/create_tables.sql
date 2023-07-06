@@ -17,13 +17,3 @@ CREATE TABLE IF NOT EXISTS armaments (
     PRIMARY KEY (id),
     FOREIGN KEY (spaceship_id) REFERENCES spaceships(id)
 );
-
--- How to run the script
-/**
-*  #connect to the database
-*  - mysql -u username -p database_name
-*  suggestion for database name -> galatic
-* 
-*  #execute sql script
-*  - source [/path/to/create_tables.sql] -> source ./sql/create_tables.sql
-*/

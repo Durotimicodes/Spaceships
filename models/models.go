@@ -41,8 +41,7 @@ type CreateSpaceshipRequest struct {
 	Armaments []ArmamentRequest
 }
 
-
-
+//----- Validator ------
 func (s *Spaceship) IsValidSpaceship() bool {
 	if s.Name == "" || s.Class == ""  {
 		return false
