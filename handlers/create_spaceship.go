@@ -2,58 +2,40 @@ package handlers
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/durotimicodes/xanda_task_R3_D3/helpers"
 	"github.com/durotimicodes/xanda_task_R3_D3/models"
-	"github.com/durotimicodes/xanda_task_R3_D3/service"
+	"github.com/durotimicodes/xanda_task_R3_D3/repository"
 )
 
-func readBody(r *http.Request) []byte {
-	body, err := ioutil.ReadAll(r.Body)
-	helpers.HandlerErr(err)
-
-	return body
-}
-
-func ApiResponse(resp map[string]bool, w http.ResponseWriter) {
-	if resp["success"] == true {
-		json.NewEncoder(w).Encode(resp)
-	}
-}
-
 type Handler struct {
-	repository service.SpaceshipRepository
+	repository repository.SpaceshipRepository
 }
 
-func NewHandler(s service.SpaceshipRepository) Handler {
+func NewHandler(s repository.SpaceshipRepository) Handler {
 	return Handler{
 		repository: s,
 	}
 }
 
+// Create spaceship end-point
 func (h Handler) CreateSpaceshipHandler(w http.ResponseWriter, r *http.Request) {
-	body := readBody(r)
-	var spaceship models.Spaceship
+	body := helpers.ReadBody(r)
+	var spaceshipReq models.CreateSpaceshipRequest
 
-	err := json.Unmarshal(body, &spaceship)
+	err := json.Unmarshal(body, &spaceshipReq)
 	helpers.HandlerErr(err)
 
-	createShip, err := h.repository.CreateSpaceship(
-		spaceship.Name,
-		spaceship.Class,
-		spaceship.Status,
-		spaceship.Crew,
-		spaceship.Value,
-		spaceship.Armaments,
-	)
-	
+	spaceshipModel := helpers.ConvertRequestToModel(&spaceshipReq)
+	createShip, err := h.repository.CreateSpaceship(spaceshipModel)
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error: ": err.Error()})
 		return
 	}
 
-	ApiResponse(createShip, w)
+	w.WriteHeader(http.StatusOK)
+	helpers.ApiResponse(createShip, w)
 }

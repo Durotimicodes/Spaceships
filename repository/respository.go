@@ -1,8 +1,7 @@
-package service
+package repository
 
 import (
 	"errors"
-	"strconv"
 
 	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database"
 	"github.com/durotimicodes/xanda_task_R3_D3/models"
@@ -15,9 +14,9 @@ type SpaceshipRepository interface {
 	FilterAllByClass(class string) ([]models.Spaceship, error)
 	FilterAllByStatus(status string) ([]models.Spaceship, error)
 	GetSingleSpaceship(id int) (*models.Spaceship, error)
-	CreateSpaceship(name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error)
 	DeleteSpaceship(id int) (map[string]bool, error)
-	UpdateSpaceship(id int, name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error)
+	CreateSpaceship(spaceship *models.Spaceship) (map[string]bool, error)
+	UpdateSpaceship(id int, spaceship *models.Spaceship) (map[string]bool, error)
 }
 
 // -------- Repository Begin --------
@@ -85,16 +84,7 @@ func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 
 }
 
-func (db *MySQLDb) CreateSpaceship(name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error) {
-
-	spaceship := models.Spaceship{
-		Name:   name,
-		Class:  class,
-		Status: status,
-		Crew:   crew,
-		Value:  value,
-	}
-
+func (db *MySQLDb) CreateSpaceship(spaceship *models.Spaceship) (map[string]bool, error) {
 	isvalid := spaceship.IsValidSpaceship()
 	if !isvalid {
 		return nil, errors.New("spaceship not valid")
@@ -105,51 +95,23 @@ func (db *MySQLDb) CreateSpaceship(name, class, status string, crew int, value f
 		return nil, resp.Error
 	}
 
-	for i := range armaments {
-		armaments[i].SpaceshipID = spaceship.ID
-	}
-
-	resp = database.DB.Create(&armaments)
-
 	return map[string]bool{"success": true}, resp.Error
-
 }
 
-func (db *MySQLDb) UpdateSpaceship(id int, name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error) {
-
-	spaceship := models.Spaceship{
-		Name:   name,
-		Class:  class,
-		Status: status,
-		Crew:   crew,
-		Value:  value,
-	}
+func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[string]bool, error) {
 
 	isvalid := spaceship.IsValidSpaceship()
 	if !isvalid {
 		return nil, errors.New("spaceship not valid")
 	}
 
-	resp := db.DB.Model(&spaceship).Where("id = ?", id).
-		Update("name", name).
-		Update("class", class).
-		Update("armaments", armaments).
-		Update("crew", crew).
-		Update("value", value).
-		Update("status", status)
+	resp := db.DB.Model(&models.Spaceship{}).Where("id = ?", id).Updates(spaceship)
 
 	if resp.Error != nil {
 		return nil, resp.Error
 	}
 
-	for i := range armaments {
-		armaments[i].SpaceshipID = spaceship.ID
-	}
-
-	resp = db.DB.Model(&armaments).Where("id = ?", strconv.Itoa(id))
-
 	return map[string]bool{"success": true}, resp.Error
-
 }
 
 func (db *MySQLDb) DeleteSpaceship(Id int) (map[string]bool, error) {
@@ -168,45 +130,3 @@ func (db *MySQLDb) DeleteSpaceship(Id int) (map[string]bool, error) {
 	return map[string]bool{"success": true}, nil
 }
 
-// -------- Repository End --------
-
-
-
-// -------- Services Begin --------
-func GetAllSpaceShips() ([]models.Spaceship, error) {
-	r := &MySQLDb{}
-	return r.GetAll()
-}
-
-func GetAllSpaceShipsByName(name string) ([]models.Spaceship, error) {
-	r := &MySQLDb{}
-	return r.FilterAllByName(name)
-}
-
-func GetAllSpaceShipsByClass(class string) ([]models.Spaceship, error) {
-	r := &MySQLDb{}
-	return r.FilterAllByClass(class)
-}
-
-func GetAllSpaceShipsByStatus(status string) ([]models.Spaceship, error) {
-	r := &MySQLDb{}
-	return r.FilterAllByStatus(status)
-}
-
-func GetSpaceship(id int) (*models.Spaceship, error) {
-	r := &MySQLDb{}
-	return r.GetSingleSpaceship(id)
-}
-
-func UpdateSpaceship(id int, name, class, status string, crew int, value float32, armaments []models.Armament) (map[string]bool, error) {
-	r := &MySQLDb{}
-	return r.UpdateSpaceship(id, name, class, status, crew, value, armaments)
-}
-
-
-func DeleteSpaceshipByID(id int) (map[string]bool, error) {
-	r := &MySQLDb{}
-	return r.DeleteSpaceship(id)
-}
-
-// -------- Services End --------

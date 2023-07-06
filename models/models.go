@@ -26,10 +26,22 @@ type Spaceship struct {
 	UpdatedAt time.Time
 }
 
-type Validation struct {
-	Value string
-	Valid string
+
+type ArmamentRequest struct {
+	Title string
+	Qty   string
 }
+
+type CreateSpaceshipRequest struct {
+	Name      string
+	Class     string
+	Status    string
+	Crew      int
+	Value     float32
+	Armaments []ArmamentRequest
+}
+
+
 
 func (s *Spaceship) IsValidSpaceship() bool {
 	if s.Name == "" || s.Class == ""  {

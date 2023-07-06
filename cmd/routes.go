@@ -7,11 +7,12 @@ import (
 
 	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database"
 	"github.com/durotimicodes/xanda_task_R3_D3/handlers"
-	"github.com/durotimicodes/xanda_task_R3_D3/service"
+	"github.com/durotimicodes/xanda_task_R3_D3/repository"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
 
+//Routes
 func StartApi() {
 
 	const webPort = ":3300"
@@ -21,15 +22,21 @@ func StartApi() {
 
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	repository := service.NewMySqlDB(database.DB)
+	repository := repository.NewMySqlDB(database.DB)
 
 	handler := handlers.NewHandler(repository)
 
 	r.Get("/spaceships", handler.GetAllSpaceShipsHandler)
-	r.Get("/spaceship/{ID}", handler.GetSpaceShipHandler)
-	r.Post("/spaceship/create", handler.CreateSpaceshipHandler)
-	r.Delete("/spaceship/delete/{ID}", handler.DeleteSpaceshipHandler)
-	r.Put("/spaceship/update/{ID}", handler.UpdateSpaceshipHandler)
+
+	r.Route("/spaceship", func(r chi.Router) {
+		r.Get("/{ID}", handler.GetSpaceShipHandler)
+
+		r.Post("/create", handler.CreateSpaceshipHandler)
+
+		r.Delete("/delete/{ID}", handler.DeleteSpaceshipHandler)
+
+		r.Put("/update/{ID}", handler.UpdateSpaceshipHandler)
+	})
 
 	log.Printf("Starting the server on port %s", webPort)
 	log.Fatal(http.ListenAndServe(webPort, r))

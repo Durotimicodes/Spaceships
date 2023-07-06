@@ -4,32 +4,29 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"github.com/durotimicodes/xanda_task_R3_D3/models"
 
 	"github.com/durotimicodes/xanda_task_R3_D3/helpers"
-	"github.com/durotimicodes/xanda_task_R3_D3/models"
 	"github.com/go-chi/chi"
 )
 
+// Update spaceship end-point
 func (h Handler) UpdateSpaceshipHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "ID")
 	spaceshipID, err := strconv.Atoi(id)
 	helpers.HandlerErr(err)
 
-	body := readBody(r)
-	var spaceship models.Spaceship
+	body := helpers.ReadBody(r)
+	var spaceshipReq models.CreateSpaceshipRequest
 
-	err = json.Unmarshal(body, &spaceship)
+	err = json.Unmarshal(body, &spaceshipReq)
 	helpers.HandlerErr(err)
 
+	spaceshipModel := helpers.ConvertRequestToModel(&spaceshipReq)
 	updateSpaceship, err := h.repository.UpdateSpaceship(
 		spaceshipID,
-		spaceship.Name,
-		spaceship.Class,
-		spaceship.Status,
-		spaceship.Crew,
-		spaceship.Value,
-		spaceship.Armaments,
+		spaceshipModel,
 	)
 
 	if err != nil {
@@ -38,5 +35,6 @@ func (h Handler) UpdateSpaceshipHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	ApiResponse(updateSpaceship, w)
+	w.WriteHeader(http.StatusOK)
+	helpers.ApiResponse(updateSpaceship, w)
 }
