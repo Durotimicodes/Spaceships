@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// Delete spaceship end-point
+// Delete spaceship handler
 func (h Handler) DeleteSpaceshipHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "ID")
 	spaceshipID, err := strconv.Atoi(id)

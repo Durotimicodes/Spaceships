@@ -34,11 +34,15 @@ func NewMySqlDB(db *gorm.DB) *MySQLDb {
 func (db *MySQLDb) GetAll() ([]models.Spaceship, error) {
 
 	spaceships := []models.Spaceship{}
-	database.DB.Find(&spaceships)
+	resp := database.DB.Find(&spaceships)
+	if resp != nil {
+		return nil, resp.Error
+	}
 
 	return spaceships, nil
 }
 
+//Filter spaceships by Name
 func (db *MySQLDb) FilterAllByName(name string) ([]models.Spaceship, error) {
 	var spaceships []models.Spaceship
 
@@ -51,7 +55,7 @@ func (db *MySQLDb) FilterAllByName(name string) ([]models.Spaceship, error) {
 }
 
 
-//Filter spaceships by Name
+//Filter spaceships by Class
 func (db *MySQLDb) FilterAllByClass(class string) ([]models.Spaceship, error) {
 	var spaceships []models.Spaceship
 
@@ -81,8 +85,9 @@ func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 
 	spaceship := &models.Spaceship{}
 
-	if err := database.DB.Where("id = ?", Id).First(spaceship).Error; err != nil {
-		return nil, err
+	resp := database.DB.Where("id = ?", Id).First(spaceship)
+	if resp != nil {
+		return nil, resp.Error
 	}
 
 	return spaceship, nil
@@ -101,7 +106,7 @@ func (db *MySQLDb) CreateSpaceship(spaceship *models.Spaceship) (map[string]bool
 		return nil, resp.Error
 	}
 
-	return map[string]bool{"success": true}, resp.Error
+	return map[string]bool{"success": true}, nil
 }
 
 //Update Spaceship
@@ -118,7 +123,7 @@ func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[str
 		return nil, resp.Error
 	}
 
-	return map[string]bool{"success": true}, resp.Error
+	return map[string]bool{"success": true}, nil
 }
 
 

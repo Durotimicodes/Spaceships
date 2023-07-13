@@ -12,18 +12,18 @@ import (
 func HandlerErr(err error) {
 	if err != nil {
 		log.Println(err.Error())
+		return
 	}
 }
 
 func ReadBody(r *http.Request) []byte {
 	body, err := ioutil.ReadAll(r.Body)
 	HandlerErr(err)
-
 	return body
 }
 
 func ApiResponse(resp map[string]bool, w http.ResponseWriter) {
-	if resp["success"] == true {
+	if resp["success"] {
 		json.NewEncoder(w).Encode(resp)
 	}
 }

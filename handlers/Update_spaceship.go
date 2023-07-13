@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// Update spaceship end-point
+// Update spaceship handler
 func (h Handler) UpdateSpaceshipHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "ID")

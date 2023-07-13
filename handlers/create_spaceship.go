@@ -19,7 +19,7 @@ func NewHandler(s repository.SpaceshipRepository) Handler {
 	}
 }
 
-// Create spaceship end-point
+// Create spaceship handler
 func (h Handler) CreateSpaceshipHandler(w http.ResponseWriter, r *http.Request) {
 	body := helpers.ReadBody(r)
 	var spaceshipReq models.CreateSpaceshipRequest

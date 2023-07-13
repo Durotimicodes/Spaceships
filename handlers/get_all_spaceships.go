@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-// Get all Spaceship end-point and filter by either name, class or status
+// Get all Spaceship handler and filter by either name, class or status
 func (h Handler) GetAllSpaceShipsHandler(w http.ResponseWriter, r *http.Request) {
 	var resp interface{}
 	var err error
@@ -30,7 +30,7 @@ func (h Handler) GetAllSpaceShipsHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		render.JSON(w, r, err)
 		return
 	}

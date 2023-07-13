@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/render"
 )
 
-// Get one spaceship end-point
+// Get one spaceship handler
 func (h Handler) GetSpaceShipHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "ID")
