@@ -13,7 +13,7 @@ func LoggingMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
 		fmt.Println("Before handler is executed")
 		w.Write([]byte("Adding response via middleware\n"))
 		log.Println(r.URL.Path)
-		nxt.ServeHTTP(w, r)
+		nxt(w, r)
 		fmt.Println("After handler is executed")
 	})
 }
@@ -41,24 +41,24 @@ func PanicRecoveryMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
 
 // cors middleware
 func CORSMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 		if r.Method == "OPTIONS" {
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT")
+			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,DELETE,PUT,PATCH")
 			w.Header().Set("Access-Control-Allow-Headers", "Control-Type, X-CSRF-Token, Authorization")
 			return
 		} else {
-			nxt.ServeHTTP(w, r)
+			nxt(w, r)
 		}
-	})
+	}
 }
 
-//chaining the middlewares
-type Middleware func(http.Handler) http.Handler
+// chaining the middlewares
+type NewMiddleware func(http.HandlerFunc) http.HandlerFunc
 
-func ChainingMiddleware(h http.Handler, m ...Middleware) http.Handler {
+func ChainningMiddleware(h http.HandlerFunc, m ...NewMiddleware) http.HandlerFunc {
 	if len(m) < 1 {
 		return h
 	}
