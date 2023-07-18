@@ -15,7 +15,7 @@ func (h Handler) GetAllSpaceShipsHandler(w http.ResponseWriter, r *http.Request)
 
 	if len(urlQueryParams) == 0 {
 		resp, err = h.repository.GetAll()
-		w.WriteHeader(200)
+		w.WriteHeader(http.StatusOK)
 	}
 
 	if nameQueryParams := urlQueryParams.Get("name"); nameQueryParams != "" {

@@ -24,6 +24,6 @@ func (h Handler) DeleteSpaceshipHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.WriteHeader(200)
+	w.WriteHeader(http.StatusOK)
 	helpers.ApiResponse(resp, w)
 }

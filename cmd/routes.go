@@ -40,13 +40,13 @@ func StartApi() {
 	r.Get("/spaceships", middlewares.ChainningMiddleware(handler.GetAllSpaceShipsHandler, commonMiddlewares...))
 
 	r.Route("/spaceship", func(r chi.Router) {
-		r.Get("/{ID}", middlewares.ChainningMiddleware(handler.GetSpaceShipHandler))
+		r.Get("/{ID}", middlewares.ChainningMiddleware(handler.GetSpaceShipHandler, commonMiddlewares...))
 
-		r.Post("/create", middlewares.ChainningMiddleware(handler.CreateSpaceshipHandler))
+		r.Post("/create", middlewares.ChainningMiddleware(handler.CreateSpaceshipHandler, commonMiddlewares...))
 
-		r.Delete("/delete/{ID}", middlewares.ChainningMiddleware(handler.DeleteSpaceshipHandler))
+		r.Delete("/delete/{ID}", middlewares.ChainningMiddleware(handler.DeleteSpaceshipHandler, commonMiddlewares...))
 
-		r.Put("/update/{ID}", middlewares.ChainningMiddleware(handler.UpdateSpaceshipHandler))
+		r.Put("/update/{ID}", middlewares.ChainningMiddleware(handler.UpdateSpaceshipHandler, commonMiddlewares...))
 	})
 
 	log.Printf("Starting the server on port %s", webPort)
