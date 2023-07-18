@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 // logging middleware
-func LoggingMiddleware(nxt http.Handler) http.Handler {
+func LoggingMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Before handler is executed")
 		w.Write([]byte("Adding response via middleware\n"))
@@ -18,8 +18,7 @@ func LoggingMiddleware(nxt http.Handler) http.Handler {
 	})
 }
 
-
-//adding headers middleware
+// adding headers middleware
 func HeaderMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
@@ -27,10 +26,10 @@ func HeaderMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-//recovery middleware
+// recovery middleware
 func PanicRecoveryMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer func ()  {
+		defer func() {
 			if err := recover(); err != nil {
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				log.Println(string(debug.Stack()))
@@ -40,9 +39,9 @@ func PanicRecoveryMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-//cors middleware
+// cors middleware
 func CORSMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 		if r.Method == "OPTIONS" {
@@ -54,4 +53,20 @@ func CORSMiddleware(nxt http.HandlerFunc) http.HandlerFunc {
 			nxt.ServeHTTP(w, r)
 		}
 	})
+}
+
+//chaining the middlewares
+type Middleware func(http.Handler) http.Handler
+
+func ChainingMiddleware(h http.Handler, m ...Middleware) http.Handler {
+	if len(m) < 1 {
+		return h
+	}
+
+	wrappedHandler := h
+	for i := len(m) - 1; i >= 0; i-- {
+		wrappedHandler = m[i](wrappedHandler)
+	}
+
+	return wrappedHandler
 }
