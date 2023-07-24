@@ -142,7 +142,7 @@ localhost:3300/spaceship/id
 
 # POST Create Spaceship
 ```sh
-localhost:3300/create
+localhost:3300/spaceship/create
 ```
 
 # DELETE Delete Spaceship
