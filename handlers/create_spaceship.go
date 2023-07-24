@@ -36,6 +36,6 @@ func (h Handler) CreateSpaceshipHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	helpers.ApiResponse(createShip, w)
 }

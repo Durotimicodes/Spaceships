@@ -7,7 +7,6 @@ import (
 
 	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database"
 	"github.com/durotimicodes/xanda_task_R3_D3/handlers"
-	"github.com/durotimicodes/xanda_task_R3_D3/middlewares"
 	"github.com/durotimicodes/xanda_task_R3_D3/repository"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -16,19 +15,19 @@ import (
 // Routes
 func StartApi() {
 
-	const webPort = ":3300"
+	const webPort = ":3400"
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	//group of middlewares
-	commonMiddlewares := []middlewares.NewMiddleware{
-		middlewares.CORSMiddleware,
-		middlewares.LoggingMiddleware,
-		middlewares.PanicRecoveryMiddleware,
-		middlewares.HeaderMiddleware,
-	}
+	// commonMiddlewares := []middlewares.NewMiddleware{
+	// 	middlewares.CORSMiddleware,
+	// 	middlewares.LoggingMiddleware,
+	// 	middlewares.PanicRecoveryMiddleware,
+	// 	middlewares.HeaderMiddleware,
+	// }
 
 	//repository
 	repository := repository.NewMySqlDB(database.DB)
@@ -37,16 +36,16 @@ func StartApi() {
 	//if the middleware is still alive
 	r.Use(middleware.Heartbeat("/ping"))
 
-	r.Get("/spaceships", middlewares.ChainningMiddleware(handler.GetAllSpaceShipsHandler, commonMiddlewares...))
+	r.Get("/spaceships", handler.GetAllSpaceShipsHandler)
 
 	r.Route("/spaceship", func(r chi.Router) {
-		r.Get("/{ID}", middlewares.ChainningMiddleware(handler.GetSpaceShipHandler, commonMiddlewares...))
+		r.Get("/{ID}", handler.GetSpaceShipHandler)
 
-		r.Post("/create", middlewares.ChainningMiddleware(handler.CreateSpaceshipHandler, commonMiddlewares...))
+		r.Post("/create", handler.CreateSpaceshipHandler)
 
-		r.Delete("/delete/{ID}", middlewares.ChainningMiddleware(handler.DeleteSpaceshipHandler, commonMiddlewares...))
+		r.Delete("/delete/{ID}", handler.DeleteSpaceshipHandler)
 
-		r.Put("/update/{ID}", middlewares.ChainningMiddleware(handler.UpdateSpaceshipHandler, commonMiddlewares...))
+		r.Put("/update/{ID}", handler.UpdateSpaceshipHandler)
 	})
 
 	log.Printf("Starting the server on port %s", webPort)
