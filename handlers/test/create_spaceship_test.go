@@ -3,7 +3,6 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -30,7 +29,6 @@ func TestCreateSpaceship(t *testing.T) {
 	jsonValue, _ := json.MarshalIndent(createSpaceship, "", "")
 
 	req, err := http.NewRequest("POST", "/spaceship/create", bytes.NewBuffer(jsonValue))
-	fmt.Println("The request", req)
 	helpers.HandlerErr(err)
 
 	w := httptest.NewRecorder()

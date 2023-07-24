@@ -3,7 +3,6 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -28,7 +27,6 @@ func TestGetAllSpaceship(t *testing.T) {
 	jsonValue, _ := json.MarshalIndent(map[string]bool{"success": true}, "", " ")
 	req, _ := http.NewRequest("GET", "/spaceships", bytes.NewBuffer(jsonValue))
 	w := httptest.NewRecorder()
-	fmt.Println("THE REQUEST", req)
 	r.ServeHTTP(w, req)
 
 	var spaceships []models.Spaceship
