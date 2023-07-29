@@ -30,7 +30,7 @@ func NewMySqlDB(db *gorm.DB) *MySQLDb {
 	}
 }
 
-//Get all spaceships
+// Get all spaceships
 func (db *MySQLDb) GetAll() ([]models.Spaceship, error) {
 
 	spaceships := []models.Spaceship{}
@@ -42,7 +42,7 @@ func (db *MySQLDb) GetAll() ([]models.Spaceship, error) {
 	return spaceships, nil
 }
 
-//Filter spaceships by Name
+// Filter spaceships by Name
 func (db *MySQLDb) FilterAllByName(name string) ([]models.Spaceship, error) {
 	var spaceships []models.Spaceship
 
@@ -54,8 +54,7 @@ func (db *MySQLDb) FilterAllByName(name string) ([]models.Spaceship, error) {
 	return spaceships, nil
 }
 
-
-//Filter spaceships by Class
+// Filter spaceships by Class
 func (db *MySQLDb) FilterAllByClass(class string) ([]models.Spaceship, error) {
 	var spaceships []models.Spaceship
 
@@ -67,7 +66,7 @@ func (db *MySQLDb) FilterAllByClass(class string) ([]models.Spaceship, error) {
 	return spaceships, nil
 }
 
-//Filter spaceships by Status
+// Filter spaceships by Status
 func (db *MySQLDb) FilterAllByStatus(status string) ([]models.Spaceship, error) {
 
 	var spaceships []models.Spaceship
@@ -80,7 +79,7 @@ func (db *MySQLDb) FilterAllByStatus(status string) ([]models.Spaceship, error) 
 	return spaceships, nil
 }
 
-//Get Single Spaceship
+// Get Single Spaceship
 func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 
 	spaceship := &models.Spaceship{}
@@ -94,7 +93,7 @@ func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 
 }
 
-//Create Spaceship
+// Create Spaceship
 func (db *MySQLDb) CreateSpaceship(spaceship *models.Spaceship) (map[string]bool, error) {
 	isvalid := spaceship.IsValidSpaceship()
 	if !isvalid {
@@ -109,7 +108,7 @@ func (db *MySQLDb) CreateSpaceship(spaceship *models.Spaceship) (map[string]bool
 	return map[string]bool{"success": true}, nil
 }
 
-//Update Spaceship
+// Update Spaceship
 func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[string]bool, error) {
 
 	isvalid := spaceship.IsValidSpaceship()
@@ -126,21 +125,26 @@ func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[str
 	return map[string]bool{"success": true}, nil
 }
 
-
-//Delete Spaceship
+// Delete Spaceship
 func (db *MySQLDb) DeleteSpaceship(Id int) (map[string]bool, error) {
 	spaceship := models.Spaceship{}
 
-	err := database.DB.Where("spaceship_id = ?", Id).Delete(&spaceship.Armaments).Error
-	if err != nil {
-		return nil, err
-	}
+	checker := database.DB.Where("spaceship_id = ?", Id).Limit(1).Find(&spaceship)
+	if checker.RowsAffected == 0 {
+		return map[string]bool{"No row found on this id": false}, errors.New("no row found")
+		//redirect
+	} else {
+		err := database.DB.Where("spaceship_id = ?", Id).Delete(&spaceship.Armaments).Error
+		if err != nil {
+			return nil, err
+		}
 
-	err = database.DB.Where("id = ?", Id).Delete(&spaceship).Error
-	if err != nil {
-		return nil, err
+		err = database.DB.Where("id = ?", Id).Delete(&spaceship).Error
+		if err != nil {
+			return nil, err
+		}
+
 	}
 
 	return map[string]bool{"success": true}, nil
 }
-
