@@ -84,9 +84,14 @@ func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 
 	spaceship := &models.Spaceship{}
 
-	resp := database.DB.Where("id = ?", Id).First(spaceship)
-	if resp != nil {
-		return nil, resp.Error
+	checker := database.DB.Where("id = ?", Id).Limit(1).First(&spaceship)
+	if checker.RowsAffected == 0 {
+		return nil, errors.New("no row found with this id")
+	} else {
+		resp := database.DB.Where("id = ?", Id).First(&spaceship)
+		if resp != nil {
+			return nil, resp.Error
+		}
 	}
 
 	return spaceship, nil
@@ -116,10 +121,15 @@ func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[str
 		return nil, errors.New("spaceship not valid")
 	}
 
-	resp := db.DB.Model(&models.Spaceship{}).Where("id = ?", id).Updates(spaceship)
+	checker := database.DB.Where("id = ?", id).Limit(1).Find(&spaceship)
+	if checker.RowsAffected == 0 {
+		return map[string]bool{"no row found on this id": false}, errors.New("no row found on this id")
+	} else {
+		resp := db.DB.Model(&models.Spaceship{}).Where("id = ?", id).Updates(spaceship)
 
-	if resp.Error != nil {
-		return nil, resp.Error
+		if resp.Error != nil {
+			return nil, resp.Error
+		}
 	}
 
 	return map[string]bool{"success": true}, nil
@@ -129,10 +139,9 @@ func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[str
 func (db *MySQLDb) DeleteSpaceship(Id int) (map[string]bool, error) {
 	spaceship := models.Spaceship{}
 
-	checker := database.DB.Where("spaceship_id = ?", Id).Limit(1).Find(&spaceship)
+	checker := database.DB.Where("id = ?", Id).Limit(1).Find(&spaceship)
 	if checker.RowsAffected == 0 {
-		return map[string]bool{"No row found on this id": false}, errors.New("no row found")
-		//redirect
+		return map[string]bool{"no row found on this id": false}, errors.New("no row found on this Id")
 	} else {
 		err := database.DB.Where("spaceship_id = ?", Id).Delete(&spaceship.Armaments).Error
 		if err != nil {

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -16,7 +15,6 @@ func (h Handler) GetSpaceShipHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "ID")
 	spaceshipID, err := strconv.Atoi(id)
 	helpers.HandlerErr(err)
-	log.Println("I am here")
 
 	m, err := h.repository.GetSingleSpaceship(spaceshipID)
 
