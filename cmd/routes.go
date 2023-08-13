@@ -39,9 +39,8 @@ func StartApi(h *handlers.Handler) (*chi.Mux, string) {
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
-		MaxAge:           300,
+		MaxAge:           int(12 * time.Hour),
 	}))
-
 
 	//if the middleware is still alive
 	r.Use(middleware.Heartbeat("/ping"))

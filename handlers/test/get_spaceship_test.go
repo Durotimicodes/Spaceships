@@ -23,8 +23,7 @@ import (
 )
 
 func TestGetSpaceship(t *testing.T) {
-	spaceship := generateRandomSpaceship()
-
+	
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -36,7 +35,9 @@ func TestGetSpaceship(t *testing.T) {
 	//start test server and send request
 	route, _ := cmd.StartApi(h)
 
-	bodyJSON, err := json.Marshal(spaceship)
+	spaceship := generateRandomSpaceship()
+
+	bodyJSON, err := json.Marshal(*spaceship)
 	if err != nil {
 		t.Fail()
 	}
