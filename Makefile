@@ -1,4 +1,4 @@
-server:
+run:
 	go run main.go
 
 mock_model:
@@ -9,3 +9,6 @@ mock:
 
 test:
 	go test -v -cover ./...
+
+mod:
+	go mod tidy

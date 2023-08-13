@@ -1,61 +1,84 @@
 package test
 
-import "testing"
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"math/rand"
+	"net/http"
+	"net/http/httptest"
+	"strconv"
+	"strings"
+	"testing"
+	"time"
 
-// import (
-// 	"encoding/json"
-// 	"io/ioutil"
-// 	"net/http"
-// 	"net/http/httptest"
-// 	"testing"
-
-// 	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database"
-// 	"github.com/durotimicodes/xanda_task_R3_D3/handlers"
-// 	"github.com/durotimicodes/xanda_task_R3_D3/helpers"
-// 	"github.com/durotimicodes/xanda_task_R3_D3/models"
-// 	"github.com/durotimicodes/xanda_task_R3_D3/repository"
-// 	"github.com/go-chi/chi"
-// 	"github.com/go-chi/chi/v5"
-// 	"github.com/stretchr/testify/assert"
-// 	"gorm.io/gorm"
-// )
+	"github.com/brianvoe/gofakeit/v6"
+	"github.com/durotimicodes/xanda_task_R3_D3/cmd"
+	mockdatabase "github.com/durotimicodes/xanda_task_R3_D3/cmd/database/mock"
+	"github.com/durotimicodes/xanda_task_R3_D3/handlers"
+	"github.com/durotimicodes/xanda_task_R3_D3/models"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
 func TestGetSpaceship(t *testing.T) {
-	// 	database.InitDatabase()
-	// 	db := database.GetDB()
-	// 	req, w := setGetBookRouter(db)
+	spaceship := generateRandomSpaceship()
 
-	// 	a := assert.New(t)
-	// 	a.Equal(http.MethodGet, req.Method, "HTTP request method error")
-	// 	a.Equal(http.StatusOK, w.Code, "HTTP request status code error")
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	// 	body, err := ioutil.ReadAll(w.Body)
-	// 	if err != nil {
-	// 		a.Error(err)
-	// 	}
+	store := mockdatabase.NewMockSpaceshipRepository(ctrl)
+	h := &handlers.Handler{
+		DB: store,
+	}
 
-	// 	actual := models.Spaceship{}
-	// 	if err := json.Unmarshal(body, &actual); err != nil {
-	// 		a.Error(err)
-	// 	}
+	//start test server and send request
+	route, _ := cmd.StartApi(h)
 
-	// 	expected := models.Spaceship{}
-	// 	a.Equal(expected, actual)
+	bodyJSON, err := json.Marshal(spaceship)
+	if err != nil {
+		t.Fail()
+	}
 
-	// }
+	t.Run("getting product by ID", func(t *testing.T) {
+		id := spaceship.ID
+		store.EXPECT().GetSingleSpaceship(id).Times(1).Return(nil, errors.New("Error Exist"))
+		recorder := httptest.NewRecorder()
+		url := fmt.Sprintf("/spaceship/%d", id)
+		req, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(bodyJSON)))
+		require.NoError(t, err)
+		route.ServeHTTP(recorder, req)
+		fmt.Println(recorder.Body.String())
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+		assert.Contains(t, recorder.Body.String(), nil)
 
-	// func setGetBookRouter(db *gorm.DB) (*http.Request, *httptest.ResponseRecorder) {
-	// 	r := chi.NewRouter()
+	})
 
-	// 	repository := repository.NewMySqlDB(database.DB)
-	// 	handler := handlers.NewHandler(repository)
+}
 
-	// 	r.Get("/{ID}", handler.GetSpaceShipHandler)
-	// 	req, err := http.NewRequest(http.MethodGet, "/{ID}", nil)
-	// 	helpers.HandlerErr(err)
+func generateRandomSpaceship() *models.Spaceship {
 
-	// 	req.Header.Set("Content-Type", "application/json")
-	// 	w := httptest.NewRecorder()
-	// 	r.ServeHTTP(w, req)
-	// 	return req, w
+	randomNum := uint(rand.Intn(1000))
+	randomFloat := rand.Float32()
+
+	armanment := models.Armament{
+		ID:          randomNum,
+		SpaceshipID: randomNum,
+		Title:       gofakeit.Company(),
+		Qty:         strconv.Itoa(int(randomNum)),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	return &models.Spaceship{
+		ID:        randomNum,
+		Name:      gofakeit.Name(),
+		Armaments: []models.Armament{armanment},
+		Crew:      int(randomNum),
+		Image:     gofakeit.ImageURL(int(randomNum), int(randomNum)),
+		Value:     randomFloat,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 }

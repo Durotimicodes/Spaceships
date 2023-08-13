@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+
 var DB *gorm.DB
 
 // Initialize database

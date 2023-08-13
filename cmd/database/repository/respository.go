@@ -21,6 +21,7 @@ type SpaceshipRepository interface {
 
 // -------- Repository Begin --------
 
+
 type MySQLDb struct {
 	DB *gorm.DB
 }

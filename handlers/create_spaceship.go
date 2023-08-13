@@ -10,12 +10,12 @@ import (
 )
 
 type Handler struct {
-	repository repository.SpaceshipRepository
+	DB repository.SpaceshipRepository
 }
 
 func NewHandler(s repository.SpaceshipRepository) Handler {
 	return Handler{
-		repository: s,
+		DB: s,
 	}
 }
 
@@ -28,7 +28,7 @@ func (h Handler) CreateSpaceshipHandler(w http.ResponseWriter, r *http.Request) 
 	helpers.HandlerErr(err)
 
 	spaceshipModel := helpers.ConvertRequestToModel(&spaceshipReq)
-	createShip, err := h.repository.CreateSpaceship(spaceshipModel)
+	createShip, err := h.DB.CreateSpaceship(spaceshipModel)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

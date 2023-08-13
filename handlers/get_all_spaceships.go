@@ -14,19 +14,19 @@ func (h Handler) GetAllSpaceShipsHandler(w http.ResponseWriter, r *http.Request)
 	urlQueryParams := r.URL.Query()
 
 	if len(urlQueryParams) == 0 {
-		resp, err = h.repository.GetAll()
+		resp, err = h.DB.GetAll()
 		w.WriteHeader(http.StatusOK)
 	}
 
 	if nameQueryParams := urlQueryParams.Get("name"); nameQueryParams != "" {
-		resp, err = h.repository.FilterAllByName(nameQueryParams)
+		resp, err = h.DB.FilterAllByName(nameQueryParams)
 	}
 
 	if classQueryParams := urlQueryParams.Get("class"); classQueryParams != "" {
-		resp, err = h.repository.FilterAllByClass(classQueryParams)
+		resp, err = h.DB.FilterAllByClass(classQueryParams)
 	}
 	if statusQueryParams := urlQueryParams.Get("status"); statusQueryParams != "" {
-		resp, err = h.repository.FilterAllByName(statusQueryParams)
+		resp, err = h.DB.FilterAllByName(statusQueryParams)
 	}
 
 	if err != nil {

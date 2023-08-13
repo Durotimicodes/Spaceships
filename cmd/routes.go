@@ -5,16 +5,19 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database"
-	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database/repository"
 	"github.com/durotimicodes/xanda_task_R3_D3/handlers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 )
 
+type Router struct {
+	ContentType string
+	Handlers    map[string]func(w http.ResponseWriter, r *http.Request)
+}
+
 // Routes
-func StartApi() {
+func StartApi(h *handlers.Handler) (*chi.Mux, string) {
 
 	const webPort = ":3400"
 
@@ -39,28 +42,26 @@ func StartApi() {
 		MaxAge:           300,
 	}))
 
-	//repository
-	repository := repository.NewMySqlDB(database.DB)
-
-	handler := handlers.NewHandler(repository)
 
 	//if the middleware is still alive
 	r.Use(middleware.Heartbeat("/ping"))
 
-	r.Get("/spaceships", handler.GetAllSpaceShipsHandler)
+	r.Get("/spaceships", h.GetAllSpaceShipsHandler)
 
 	r.Route("/spaceship", func(r chi.Router) {
-		r.Get("/{ID}", handler.GetSpaceShipHandler)
+		r.Get("/{ID}", h.GetSpaceShipHandler)
 
-		r.Post("/create", handler.CreateSpaceshipHandler)
+		r.Post("/create", h.CreateSpaceshipHandler)
 
-		r.Delete("/delete/{ID}", handler.DeleteSpaceshipHandler)
+		r.Delete("/delete/{ID}", h.DeleteSpaceshipHandler)
 
-		r.Put("/update/{ID}", handler.UpdateSpaceshipHandler)
+		r.Put("/update/{ID}", h.UpdateSpaceshipHandler)
 	})
 
 	log.Printf("Starting the server on port %s", webPort)
 
 	log.Fatal(http.ListenAndServe(webPort, r))
+
+	return r, webPort
 
 }
