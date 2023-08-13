@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database"
+	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database/repository"
 	"github.com/durotimicodes/xanda_task_R3_D3/handlers"
-	"github.com/durotimicodes/xanda_task_R3_D3/repository"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 )
 
 // Routes
@@ -29,8 +30,18 @@ func StartApi() {
 	// 	middlewares.HeaderMiddleware,
 	// }
 
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "PUT"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
 	//repository
 	repository := repository.NewMySqlDB(database.DB)
+
 	handler := handlers.NewHandler(repository)
 
 	//if the middleware is still alive
@@ -49,5 +60,7 @@ func StartApi() {
 	})
 
 	log.Printf("Starting the server on port %s", webPort)
+
 	log.Fatal(http.ListenAndServe(webPort, r))
+
 }

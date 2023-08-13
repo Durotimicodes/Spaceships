@@ -9,4 +9,6 @@ func main() {
 
 	database.InitDatabase()
 	cmd.StartApi()
+	
+	
 }

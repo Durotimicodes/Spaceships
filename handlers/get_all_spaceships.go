@@ -35,6 +35,7 @@ func (h Handler) GetAllSpaceShipsHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	render.JSON(w, r, resp)
+	w.WriteHeader(http.StatusOK)
+
 }

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database/repository"
 	"github.com/durotimicodes/xanda_task_R3_D3/helpers"
 	"github.com/durotimicodes/xanda_task_R3_D3/models"
-	"github.com/durotimicodes/xanda_task_R3_D3/repository"
 )
 
 type Handler struct {

@@ -9,7 +9,7 @@ import (
 )
 
 type SpaceshipRepository interface {
-	GetAll() ([]models.Spaceship, error)
+	GetAll() (map[string]any, error)
 	FilterAllByName(name string) ([]models.Spaceship, error)
 	FilterAllByClass(class string) ([]models.Spaceship, error)
 	FilterAllByStatus(status string) ([]models.Spaceship, error)
@@ -20,6 +20,7 @@ type SpaceshipRepository interface {
 }
 
 // -------- Repository Begin --------
+
 type MySQLDb struct {
 	DB *gorm.DB
 }
@@ -31,15 +32,15 @@ func NewMySqlDB(db *gorm.DB) *MySQLDb {
 }
 
 // Get all spaceships
-func (db *MySQLDb) GetAll() ([]models.Spaceship, error) {
+func (db *MySQLDb) GetAll() (map[string]interface{}, error) {
 
 	spaceships := []models.Spaceship{}
-	resp := database.DB.Find(&spaceships)
-	if resp != nil {
-		return nil, resp.Error
-	}
 
-	return spaceships, nil
+	database.DB.Find(&spaceships)
+
+	payload := map[string]any{"data": spaceships}
+
+	return payload, nil
 }
 
 // Filter spaceships by Name
@@ -84,15 +85,11 @@ func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
 
 	spaceship := &models.Spaceship{}
 
-	checker := database.DB.Where("id = ?", Id).Limit(1).First(&spaceship)
-	if checker.RowsAffected == 0 {
-		return nil, errors.New("no row found with this id")
-	} else {
-		resp := database.DB.Where("id = ?", Id).First(&spaceship)
-		if resp != nil {
-			return nil, resp.Error
-		}
-	}
+	// checker := database.DB.Where("id = ?", Id).Limit(1).First(&spaceship)
+	// if checker.RowsAffected == 0 {
+	// 	return nil, errors.New("no row found with this id")
+	// } else {
+	database.DB.Where("id = ?", Id).First(&spaceship)
 
 	return spaceship, nil
 
@@ -121,16 +118,16 @@ func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[str
 		return nil, errors.New("spaceship not valid")
 	}
 
-	checker := database.DB.Where("id = ?", id).Limit(1).Find(&spaceship)
-	if checker.RowsAffected == 0 {
-		return map[string]bool{"no row found on this id": false}, errors.New("no row found on this id")
-	} else {
-		resp := db.DB.Model(&models.Spaceship{}).Where("id = ?", id).Updates(spaceship)
+	// checker := database.DB.Where("id = ?", id).Limit(1).Find(&spaceship)
+	// if checker.RowsAffected == 0 {
+	//return map[string]bool{"no row found on this id": false}, errors.New("no row found on this id")
+	//} else {
+	resp := db.DB.Model(&models.Spaceship{}).Where("id = ?", id).Updates(spaceship)
 
-		if resp.Error != nil {
-			return nil, resp.Error
-		}
+	if resp.Error != nil {
+		return nil, resp.Error
 	}
+	//}
 
 	return map[string]bool{"success": true}, nil
 }
@@ -139,21 +136,21 @@ func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[str
 func (db *MySQLDb) DeleteSpaceship(Id int) (map[string]bool, error) {
 	spaceship := models.Spaceship{}
 
-	checker := database.DB.Where("id = ?", Id).Limit(1).Find(&spaceship)
-	if checker.RowsAffected == 0 {
-		return map[string]bool{"no row found on this id": false}, errors.New("no row found on this Id")
-	} else {
-		err := database.DB.Where("spaceship_id = ?", Id).Delete(&spaceship.Armaments).Error
-		if err != nil {
-			return nil, err
-		}
-
-		err = database.DB.Where("id = ?", Id).Delete(&spaceship).Error
-		if err != nil {
-			return nil, err
-		}
-
+	// checker := database.DB.Where("id = ?", Id).Limit(1).Find(&spaceship)
+	// if checker.RowsAffected == 0 {
+	// 	return map[string]bool{"no row found on this id": false}, errors.New("no row found on this Id")
+	// } else {
+	err := database.DB.Where("spaceship_id = ?", Id).Delete(&spaceship.Armaments).Error
+	if err != nil {
+		return nil, err
 	}
+
+	err = database.DB.Where("id = ?", Id).Delete(&spaceship).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// }
 
 	return map[string]bool{"success": true}, nil
 }
