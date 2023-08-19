@@ -50,7 +50,7 @@ func (mr *MockSpaceshipRepositoryMockRecorder) CreateSpaceship(arg0 interface{})
 }
 
 // DeleteSpaceship mocks base method.
-func (m *MockSpaceshipRepository) DeleteSpaceship(arg0 int) (map[string]bool, error) {
+func (m *MockSpaceshipRepository) DeleteSpaceship(arg0 uint) (map[string]bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteSpaceship", arg0)
 	ret0, _ := ret[0].(map[string]bool)
@@ -125,7 +125,7 @@ func (mr *MockSpaceshipRepositoryMockRecorder) GetAll() *gomock.Call {
 }
 
 // GetSingleSpaceship mocks base method.
-func (m *MockSpaceshipRepository) GetSingleSpaceship(arg0 int) (*models.Spaceship, error) {
+func (m *MockSpaceshipRepository) GetSingleSpaceship(arg0 uint) (*models.Spaceship, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSingleSpaceship", arg0)
 	ret0, _ := ret[0].(*models.Spaceship)
@@ -140,7 +140,7 @@ func (mr *MockSpaceshipRepositoryMockRecorder) GetSingleSpaceship(arg0 interface
 }
 
 // UpdateSpaceship mocks base method.
-func (m *MockSpaceshipRepository) UpdateSpaceship(arg0 int, arg1 *models.Spaceship) (map[string]bool, error) {
+func (m *MockSpaceshipRepository) UpdateSpaceship(arg0 uint, arg1 *models.Spaceship) (map[string]bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateSpaceship", arg0, arg1)
 	ret0, _ := ret[0].(map[string]bool)

@@ -24,8 +24,8 @@ func (h Handler) UpdateSpaceshipHandler(w http.ResponseWriter, r *http.Request) 
 	helpers.HandlerErr(err)
 
 	spaceshipModel := helpers.ConvertRequestToModel(&spaceshipReq)
-	updateSpaceship, err := h.repository.UpdateSpaceship(
-		spaceshipID,
+	updateSpaceship, err := h.DB.UpdateSpaceship(
+		uint(spaceshipID),
 		spaceshipModel,
 	)
 

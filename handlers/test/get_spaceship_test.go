@@ -2,8 +2,8 @@ package test
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"net/http/httptest"
@@ -23,7 +23,7 @@ import (
 )
 
 func TestGetSpaceship(t *testing.T) {
-	
+
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -44,16 +44,18 @@ func TestGetSpaceship(t *testing.T) {
 
 	t.Run("getting product by ID", func(t *testing.T) {
 		id := spaceship.ID
-		store.EXPECT().GetSingleSpaceship(id).Times(1).Return(nil, errors.New("Error Exist"))
+		store.EXPECT().GetSingleSpaceship(id).Times(1).Return(spaceship, nil)
 		recorder := httptest.NewRecorder()
 		url := fmt.Sprintf("/spaceship/%d", id)
 		req, err := http.NewRequest(http.MethodGet, url, strings.NewReader(string(bodyJSON)))
+		log.Println(string(bodyJSON))
+		log.Println("real id", id)
+
 		require.NoError(t, err)
 		route.ServeHTTP(recorder, req)
 		fmt.Println(recorder.Body.String())
-		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
-		assert.Contains(t, recorder.Body.String(), nil)
-
+		assert.Equal(t, http.StatusOK, recorder.Code)
+		assert.Contains(t, recorder.Body.String(), string(bodyJSON))
 	})
 
 }

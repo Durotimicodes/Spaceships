@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -23,7 +22,7 @@ func StartApi(h *handlers.Handler) (*chi.Mux, string) {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Use(middleware.Timeout(60 * time.Second))
+	r.Use(middleware.Timeout(15 * time.Second))
 
 	//group of middlewares
 	// commonMiddlewares := []middlewares.NewMiddleware{
@@ -56,10 +55,6 @@ func StartApi(h *handlers.Handler) (*chi.Mux, string) {
 
 		r.Put("/update/{ID}", h.UpdateSpaceshipHandler)
 	})
-
-	log.Printf("Starting the server on port %s", webPort)
-
-	log.Fatal(http.ListenAndServe(webPort, r))
 
 	return r, webPort
 

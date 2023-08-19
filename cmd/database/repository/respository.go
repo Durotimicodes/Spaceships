@@ -2,9 +2,11 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/durotimicodes/xanda_task_R3_D3/cmd/database"
 	"github.com/durotimicodes/xanda_task_R3_D3/models"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -13,15 +15,13 @@ type SpaceshipRepository interface {
 	FilterAllByName(name string) ([]models.Spaceship, error)
 	FilterAllByClass(class string) ([]models.Spaceship, error)
 	FilterAllByStatus(status string) ([]models.Spaceship, error)
-	GetSingleSpaceship(id int) (*models.Spaceship, error)
-	DeleteSpaceship(id int) (map[string]bool, error)
+	GetSingleSpaceship(id uint) (*models.Spaceship, error)
+	DeleteSpaceship(id uint) (map[string]bool, error)
 	CreateSpaceship(spaceship *models.Spaceship) (map[string]bool, error)
-	UpdateSpaceship(id int, spaceship *models.Spaceship) (map[string]bool, error)
+	UpdateSpaceship(id uint, spaceship *models.Spaceship) (map[string]bool, error)
 }
 
 // -------- Repository Begin --------
-
-
 type MySQLDb struct {
 	DB *gorm.DB
 }
@@ -30,6 +30,24 @@ func NewMySqlDB(db *gorm.DB) *MySQLDb {
 	return &MySQLDb{
 		DB: db,
 	}
+}
+
+func (mydb *MySQLDb) Init(host, user, password, dbName, port string) error {
+	fmt.Println("connecting to Database.....")
+
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode-disable TimeZone=Afirca/Lagos", host, user, password, dbName, port)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+
+	if db == nil {
+		return fmt.Errorf("database was not initialized")
+	} else {
+		fmt.Println("Connected to database")
+	}
+	return nil
+
 }
 
 // Get all spaceships
@@ -82,7 +100,7 @@ func (db *MySQLDb) FilterAllByStatus(status string) ([]models.Spaceship, error) 
 }
 
 // Get Single Spaceship
-func (db *MySQLDb) GetSingleSpaceship(Id int) (*models.Spaceship, error) {
+func (db *MySQLDb) GetSingleSpaceship(Id uint) (*models.Spaceship, error) {
 
 	spaceship := &models.Spaceship{}
 
@@ -112,7 +130,7 @@ func (db *MySQLDb) CreateSpaceship(spaceship *models.Spaceship) (map[string]bool
 }
 
 // Update Spaceship
-func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[string]bool, error) {
+func (db *MySQLDb) UpdateSpaceship(id uint, spaceship *models.Spaceship) (map[string]bool, error) {
 
 	isvalid := spaceship.IsValidSpaceship()
 	if !isvalid {
@@ -134,7 +152,7 @@ func (db *MySQLDb) UpdateSpaceship(id int, spaceship *models.Spaceship) (map[str
 }
 
 // Delete Spaceship
-func (db *MySQLDb) DeleteSpaceship(Id int) (map[string]bool, error) {
+func (db *MySQLDb) DeleteSpaceship(Id uint) (map[string]bool, error) {
 	spaceship := models.Spaceship{}
 
 	// checker := database.DB.Where("id = ?", Id).Limit(1).Find(&spaceship)

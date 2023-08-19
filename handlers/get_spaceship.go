@@ -16,10 +16,10 @@ func (h Handler) GetSpaceShipHandler(w http.ResponseWriter, r *http.Request) {
 	spaceshipID, err := strconv.Atoi(id)
 	helpers.HandlerErr(err)
 
-	m, err := h.DB.GetSingleSpaceship(spaceshipID)
+	m, err := h.DB.GetSingleSpaceship(uint(spaceshipID))
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		render.JSON(w, r, err)
 		return
 	}

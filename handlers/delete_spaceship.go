@@ -16,7 +16,7 @@ func (h Handler) DeleteSpaceshipHandler(w http.ResponseWriter, r *http.Request) 
 
 	helpers.HandlerErr(err)
 
-	resp, err := h.DB.DeleteSpaceship(spaceshipID)
+	resp, err := h.DB.DeleteSpaceship(uint(spaceshipID))
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
